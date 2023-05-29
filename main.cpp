@@ -20,10 +20,10 @@ float randf()
 	return (float) rand() / (float) RAND_MAX;
 }
 
-void update_gravity(Vector2 *obj, float speed) 
+void update_gravity(Vector2 *obj, float radius) 
 {
 	if (obj->y < window_height) {
-		obj->y += speed;
+		obj->y += radius;
 		obj->x = obj->x + sinf(obj->y); //Oscilating movement with sin(x) function
 	}
 }
