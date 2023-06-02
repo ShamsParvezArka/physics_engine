@@ -1,32 +1,21 @@
 #include <iostream>
 #include <vector>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstdbool>
 #include <ctime>
-#include <cmath>
-#include <unistd.h>
 
 #include "raylib.h"
-#include "dimensions.h"
+#include "particle.hpp"
+#include "dimensions.hpp"
+#include "random.hpp"
+#include "random.hpp"
 
-typedef struct SnowFleck {
+typedef struct Snow {
 	Vector2 vec;
 	float radius;
-} snow_fleck;
-
-float randf() 
-{
-	return (float) rand() / (float) RAND_MAX;
-}
-
-void update_gravity(Vector2 *obj, float radius) 
-{
-	if (obj->y < window_height) {
-		obj->y += radius;
-		obj->x = obj->x + sinf(obj->y); //Oscilating movement with sin(x) function
-	}
-}
+} snow;
 
 int main() 
 {
@@ -34,22 +23,27 @@ int main()
 	SetTargetFPS(60);
 
 	srand(time_t(0));
-	std::vector<SnowFleck> snow {};
+
+	std::vector<snow> vec {};
 	
 	while (!WindowShouldClose()) {
 		ClearBackground(BLACK);
 		
-		snow_fleck particle;
-		particle.vec = {randf()*window_width, -0.10f};
-		particle.radius = randf()*2;
-		snow.push_back(particle);
+		snow particle;
+		particle.vec = {randf(0, window_width), -0.10f};
+		particle.radius = randf(0, 2);
+		vec.push_back(particle);
 
-		for (SnowFleck &obj: snow) 
-			update_gravity(&obj.vec, obj.radius);
+		for (size_t i = 0; i < vec.size(); i++) {
+			if (vec[i].vec.y >= window_height) {
+				vec.erase(vec.begin() + i);
+			}
+			update_particle(&vec[i].vec, vec[i].radius);
+		}
 
 		BeginDrawing();
 		{
-			for (SnowFleck obj: snow) {
+			for (Snow obj: vec) {
 				DrawCircleV(obj.vec, obj.radius, RAYWHITE);
 			}
 		}
